@@ -1,7 +1,7 @@
-module.exports = {
+export default {
   transform: {
     "^.+\\.(t|j)sx?$": "@swc/jest"
   },
   testEnvironment: "jsdom",
-  setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"]
+  setupFilesAfterEnv: ["<rootDir>/jest-setup.ts"],
 };

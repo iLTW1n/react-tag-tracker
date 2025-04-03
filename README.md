@@ -1,6 +1,6 @@
 # React Tag Tracker for `Tag Manager`
 
-A lightweight and customizable event tracking library for React that simplifies integration with Google Tag Manager (GTM). It provides tracking for click events, hover interactions, form submissions, and scroll visibility, with the flexibility to customize the tracking attributes and enable/disable features dynamically.
+A lightweight and customizable event tracking library for React that simplifies integration with Google Tag Manager (GTM). It provides tracking for click events, hover interactions and scroll visibility, with the flexibility to customize the tracking attributes and enable/disable features dynamically.
 
 ## 🚀 Features
 - **Customizable tracking attribute** (default: `data-track`).

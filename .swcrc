@@ -6,9 +6,7 @@
     },
     "transform": {
       "react": {
-        "runtime": "automatic",
-        "development": false,
-        "useBuiltins": true
+        "runtime": "automatic"
       }
     }
   },

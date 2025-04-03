@@ -2,6 +2,7 @@
 .DS_*
 *.log
 logs
+dist
 **/*.backup.*
 **/*.back.*
 

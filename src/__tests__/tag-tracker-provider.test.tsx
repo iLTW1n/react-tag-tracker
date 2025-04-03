@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
-import { TagTrackerProvider } from '../src';
+import { TagTrackerProvider } from '..';
 
 describe('Tag Tracker Provider', () => {
   test('CLICK', () => {

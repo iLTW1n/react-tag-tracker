@@ -4,6 +4,7 @@
     "module": "ESNext",
     "declaration": true,
     "outDir": "dist",
+    "rootDir": "./src",
     "strict": true,
     "jsx": "react-jsx",
     "moduleResolution": "Node",
@@ -11,6 +12,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
   },
-  "include": ["src", "__tests__"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": ["src/*"],
 }

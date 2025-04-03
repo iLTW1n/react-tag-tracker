@@ -1,2 +1,4 @@
-export { default as TagTrackerProvider } from './tag-tracker-provider';
-export { useTagTracker } from './tag-tracker-context';
+export { default as TagTrackerProvider } from './TagTrackerProvider';
+export { useTagTracker } from './TagTrackerContext';
+
+export type { DataLayerEvent } from "./types";

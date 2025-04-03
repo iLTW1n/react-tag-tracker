@@ -1,25 +1,14 @@
 import { ReactNode, useEffect } from 'react';
-import TagTrackerContext from './tag-tracker-context';
-
-export interface DataLayerEvent {
-  [key: string]: string; // You can replace `any` with more specific types if needed
-}
-
-declare global {
-  interface Window {
-    dataLayer: DataLayerEvent[];
-  }
-}
+import TagTrackerContext from './TagTrackerContext';
+import { DataLayerEvent } from './types';
 
 interface TagTrackerProviderType {
   children: ReactNode;
-  trackingAttribute?: string; // typescript string but prefix data
+  trackingAttribute?: string;
   enableHoverTracking?: boolean;
   enableVisibilityTracking?: boolean;
   enableCustomTracking?: boolean;
 }
-
-// const TagTrackerContext = createContext<TagTrackerContextType | null>(null);
 
 const TagTrackerProvider = (props: TagTrackerProviderType) => {
   const {
@@ -44,7 +33,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
         const parsedData: DataLayerEvent = JSON.parse(trackData || '{}');
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push(parsedData);
-        console.log('[TagTracker] Event:', parsedData);
+        console.warn('[TagTracker] Event:', parsedData);
       } catch {
         console.warn(`Invalid JSON in ${trackingAttribute} attribute:`, trackData);
       }
@@ -63,7 +52,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
           parsedData.event = 'hover';
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push(parsedData);
-          console.log('[TagTracker] Hover Event:', parsedData);
+          console.warn('[TagTracker] Hover Event:', parsedData);
         } catch (e) {
           console.warn('Hover event failed:', e);
         }
@@ -84,7 +73,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
             parsedData.event = 'visibility';
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push(parsedData);
-            console.log('[TagTracker] Visibility Event:', parsedData);
+            console.warn('[TagTracker] Visibility Event:', parsedData);
           } catch (e) {
             console.warn('Visibility tracking failed:', e);
           }
@@ -101,7 +90,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
       }
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push(eventData);
-      console.log('[TagTracker] Custom Event:', eventData);
+      console.warn('[TagTracker] Custom Event:', eventData);
     }
   };
 

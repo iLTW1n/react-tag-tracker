@@ -1,16 +1,8 @@
-import { ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 import TagTrackerContext from './TagTrackerContext';
-import { DataLayerEvent } from './types';
+import { DataLayerEventProps, TagTrackerProviderProps } from './types';
 
-interface TagTrackerProviderType {
-  children: ReactNode;
-  trackingAttribute?: string;
-  enableHoverTracking?: boolean;
-  enableVisibilityTracking?: boolean;
-  enableCustomTracking?: boolean;
-}
-
-const TagTrackerProvider = (props: TagTrackerProviderType) => {
+const TagTrackerProvider = (props: TagTrackerProviderProps) => {
   const {
     children,
     trackingAttribute = 'data-track',
@@ -30,7 +22,8 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
       const trackData = element.getAttribute(trackingAttribute);
 
       try {
-        const parsedData: DataLayerEvent = JSON.parse(trackData || '{}');
+        const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
+        // if (!parsedData.event) throw new Error('Event property is required');
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push(parsedData);
         console.log('[TagTracker] Event:', parsedData);
@@ -48,7 +41,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
         const trackData = element.getAttribute(trackingAttribute);
 
         try {
-          const parsedData: DataLayerEvent = JSON.parse(trackData || '{}');
+          const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
           parsedData.event = 'hover';
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push(parsedData);
@@ -82,7 +75,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
     }
   };
 
-  const trackCustomEvent = (eventData: DataLayerEvent) => {
+  const trackCustomEvent = (eventData: DataLayerEventProps) => {
     if (enableCustomTracking) {
       if (typeof eventData !== 'object') {
         console.warn('trackCustomEvent requires an object parameter');

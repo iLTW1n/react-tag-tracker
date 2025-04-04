@@ -1,4 +1,4 @@
-# React Tag Tracker for `Tag Manager`
+# React Tag Tracker for `Google Tag Manager`
 
 A lightweight and customizable event tracking library for React that simplifies integration with Google Tag Manager (GTM). It provides tracking for click events, hover interactions and scroll visibility, with the flexibility to customize the tracking attributes and enable/disable features dynamically.
 
@@ -148,15 +148,12 @@ export default Root;
 ## 🛠️ Configuration Options
 You can configure the following options when using the `TagTrackerProvider`:
 
-`trackingAttribute`: The attribute used for event tracking. Default is `data-track`.
+- **`trackingAttribute`**: The attribute used for event tracking. Default is `data-track`.
+  - Example: ```<button data-custom-track='{"event":"click", "category":"button"}'>Click Me</button>```
 
-Example: ```<button data-custom-track='{"event":"click", "category":"button"}'>Click Me</button>```
-
-`enableHoverTracking`: Set this to `true` to enable hover event tracking for elements with the tracking attribute. Default is `false`.
-
-`enableVisibilityTracking`: Set this to `true` to enable visibility tracking for elements with the tracking attribute. Default is false.
-
-`enableCustomTracking`: Set this to `true` to enable custom event tracking via the trackCustomEvent function. Default is true.
+- **`enableHoverTracking`**: Set this to `true` to enable hover event tracking for elements with the tracking attribute. Default is `false`.
+- **`enableVisibilityTracking`**: Set this to `true` to enable visibility tracking for elements with the tracking attribute. Default is false.
+- **`enableCustomTracking`**: Set this to `true` to enable custom event tracking via the trackCustomEvent function. Default is true.
 
 ## 🎯 Roadmap
 - 🔹 **GA4 Integration**: Send events to Google Analytics 4 (GA4).

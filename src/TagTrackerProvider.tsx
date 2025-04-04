@@ -33,7 +33,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
         const parsedData: DataLayerEvent = JSON.parse(trackData || '{}');
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push(parsedData);
-        console.warn('[TagTracker] Event:', parsedData);
+        console.log('[TagTracker] Event:', parsedData);
       } catch {
         console.warn(`Invalid JSON in ${trackingAttribute} attribute:`, trackData);
       }
@@ -52,9 +52,9 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
           parsedData.event = 'hover';
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push(parsedData);
-          console.warn('[TagTracker] Hover Event:', parsedData);
-        } catch (e) {
-          console.warn('Hover event failed:', e);
+          console.log('[TagTracker] Hover Event:', parsedData);
+        } catch (error) {
+          console.warn('Hover event failed:', error);
         }
       }
     }
@@ -73,9 +73,9 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
             parsedData.event = 'visibility';
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push(parsedData);
-            console.warn('[TagTracker] Visibility Event:', parsedData);
-          } catch (e) {
-            console.warn('Visibility tracking failed:', e);
+            console.log('[TagTracker] Visibility Event:', parsedData);
+          } catch (error) {
+            console.warn('Visibility tracking failed:', error);
           }
         }
       });
@@ -90,7 +90,7 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
       }
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push(eventData);
-      console.warn('[TagTracker] Custom Event:', eventData);
+      console.log('[TagTracker] Custom Event:', eventData);
     }
   };
 
@@ -119,7 +119,9 @@ const TagTrackerProvider = (props: TagTrackerProviderType) => {
   }, [trackingAttribute, enableHoverTracking, enableVisibilityTracking, enableCustomTracking]);
 
   return (
-    <TagTrackerContext.Provider value={{ trackCustomEvent }}>{children}</TagTrackerContext.Provider>
+    <TagTrackerContext.Provider value={{ trackCustomEvent }}>
+      { children }
+    </TagTrackerContext.Provider>
   );
 };
 

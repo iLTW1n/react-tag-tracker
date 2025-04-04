@@ -10,7 +10,7 @@ const TagTrackerContext = createContext<TagTrackerContextType | null>(null);
 export const useTagTracker = () => {
   const context = useContext(TagTrackerContext);
 
-  if (!context) throw new Error('useTagManager must be used within a TagTrackerProvider');
+  if (!context) throw new Error('useTagTracker must be used within a TagTrackerProvider');
   return context;
 };
 

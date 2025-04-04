@@ -157,8 +157,18 @@ You can configure the following options when using the `TagTrackerProvider`:
 
 ## 🎯 Roadmap
 - 🔹 **GA4 Integration**: Send events to Google Analytics 4 (GA4).
-- 🔹 **Mixpanel Integration**: Track events with Mixpanel.
 - 🔹 **Event Filters**: Add filtering options to track only specific events.
+
+## ✅ Automatic Testing (Jest + Testing Library)
+
+| Tag       | Description |
+|-----------|------------|
+| 🏷️ [Render]  | Check the rendering of the Provider. |
+| 🏷️ [Events] | Test events like `click`, `hover`, `visibility`. |
+| 🏷️ [Custom Attribute] | Check if custom attributes work correctly. |
+| 🏷️ [SSR] | Ensures it works without `window` in SSR. |
+| 🏷️ [Async] | Evaluates events with `setTimeout` or deferred events. |
+
 
 ## 📜 License
 MIT License. Open to contributions! 🚀

@@ -1,18 +1,20 @@
 {
   "name": "react-tag-tracker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A provider for React that makes it easy to track custom events and automatically send them to window.dataLayer, optimizing integration with tools like GTM.",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "main": "dist/index.js",
     "types": "dist/index.d.ts"
   },
   "scripts": {
-    "build:types": "tsc --emitDeclarationOnly",
+    "build:types": "tsc -p tsconfig.prod.json --emitDeclarationOnly",
     "build:js": "node esbuild.config.js",
     "build": "pnpm build:types && pnpm build:js",
     "test": "jest",
@@ -37,7 +39,7 @@
     "url": "git+https://github.com/iLTW1n/react-tag-tracker.git"
   },
   "license": "MIT",
-  "packageManager": "pnpm@10.7.1",
+  "packageManager": "pnpm@10.8.0",
   "devDependencies": {
     "@eslint/js": "^9.23.0",
     "@size-limit/preset-small-lib": "^11.2.0",

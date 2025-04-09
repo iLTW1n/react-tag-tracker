@@ -2,6 +2,12 @@
 
 A lightweight and customizable event tracking library for React that simplifies integration with Google Tag Manager (GTM). It provides tracking for click events, hover interactions and scroll visibility, with the flexibility to customize the tracking attributes and enable/disable features dynamically.
 
+[![npm version](https://img.shields.io/npm/v/react-tag-tracker.svg)](https://www.npmjs.com/package/react-tag-tracker)
+[![Bundle Size](https://img.shields.io/bundlephobia/min/react-tag-tracker)](https://bundlephobia.com/result?p=react-tag-tracker)
+[![npm downloads](https://img.shields.io/npm/dt/react-tag-tracker.svg)](https://www.npmjs.com/package/react-tag-tracker)
+[![License](https://img.shields.io/npm/l/react-tag-tracker)](https://github.com/tu-usuario/tu-repo/blob/main/LICENSE)
+
+
 ## 🚀 Features
 - **Customizable tracking attribute** (default: `data-track`).
 - **Track click events** on elements with the tracking attribute.

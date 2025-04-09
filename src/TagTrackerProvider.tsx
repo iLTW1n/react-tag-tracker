@@ -64,6 +64,7 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
       elements.forEach((element) => {
         const trackData = element.getAttribute(trackingAttribute);
         const rect = element.getBoundingClientRect();
+
         if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
           try {
             const parsedData = JSON.parse(trackData || '{}');

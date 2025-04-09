@@ -1,7 +1,7 @@
 {
   "name": "react-tag-tracker",
-  "version": "0.1.2",
-  "description": "A provider for React that makes it easy to track custom events and automatically send them to window.dataLayer, optimizing integration with tools like GTM.",
+  "version": "0.1.3",
+  "description": "A React provider that simplifies tracking custom events and sends them to window.dataLayer, streamlining integration with GTM.",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

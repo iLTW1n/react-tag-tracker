@@ -45,4 +45,91 @@ describe('TagTracker Hover', () => {
     expect(window.dataLayer.length).toBe(1);
     expect(window.dataLayer).toEqual([{ event: 'hover' }]);
   });
+
+  it('should hover on all elements with data-track attribute', () => {
+    const { container } = render(
+      <>
+        <button data-track='{"event":"hover", "page": "test1"}'>hover1</button>
+        <button data-track='{"event":"hover", "page": "test2"}'>hover2</button>
+      </>,
+      {
+        providerProps: {
+          enableHoverTracking: true,
+        },
+      }
+    );
+    const elements = container.querySelectorAll('[data-track]');
+    expect(elements.length).toBe(2);
+    expect(elements[0]).toHaveAttribute('data-track', '{"event":"hover", "page": "test1"}');
+    expect(elements[1]).toHaveAttribute('data-track', '{"event":"hover", "page": "test2"}');
+
+    fireEvent.mouseOver(elements[0]);
+    expect(window.dataLayer.length).toBe(1);
+    expect(window.dataLayer).toEqual([{ event: 'hover', page: 'test1' }]);
+
+    fireEvent.mouseOver(elements[1]);
+    expect(window.dataLayer.length).toBe(2);
+    expect(window.dataLayer).toEqual([
+      { event: 'hover', page: 'test1' },
+      { event: 'hover', page: 'test2' },
+    ]);
+  });
+
+  it('should hover on all elements with data-track attribut and not click on elements without data-track attribute', () => {
+    const { container } = render(
+      <>
+        <button data-track='{"event":"hover", "page": "test1"}'>click1</button>
+        <button>click2</button>
+        <button data-track='{"event":"hover", "page": "test2"}'>click1</button>
+      </>,
+      {
+        providerProps: {
+          enableHoverTracking: true,
+        },
+      }
+    );
+    const elements = container.querySelectorAll('[data-track]');
+    expect(elements.length).toBe(2);
+    expect(elements[0]).toHaveAttribute('data-track', '{"event":"hover", "page": "test1"}');
+    expect(elements[1]).toHaveAttribute('data-track', '{"event":"hover", "page": "test2"}');
+
+    fireEvent.mouseOver(elements[0]);
+    expect(window.dataLayer.length).toBe(1);
+    expect(window.dataLayer).toEqual([{ event: 'hover', page: 'test1' }]);
+
+    fireEvent.mouseOver(elements[1]);
+    expect(window.dataLayer.length).toBe(2);
+    expect(window.dataLayer).toEqual([
+      { event: 'hover', page: 'test1' },
+      { event: 'hover', page: 'test2' },
+    ]);
+
+    const elementWithoutTrack = container.querySelector('button:not([data-track])');
+    fireEvent.mouseOver(elementWithoutTrack!);
+    expect(window.dataLayer.length).toBe(2);
+  });
+
+  it('should hover on an child element and parent element with data-track attribute', () => {
+    const { container } = render(
+      <div data-track='{"event":"hover", "page": "test"}'>
+        <div>
+          <p>
+            <button>click</button>
+          </p>
+        </div>
+      </div>,
+      {
+        providerProps: {
+          enableHoverTracking: true,
+        },
+      }
+    );
+    const element = container.querySelector('button');
+    expect(element).toBeInTheDocument();
+    expect(element).not.toHaveAttribute('data-track');
+
+    fireEvent.mouseOver(element!);
+    expect(window.dataLayer.length).toBe(1);
+    expect(window.dataLayer).toEqual([{ event: 'hover', page: 'test' }]);
+  });
 });

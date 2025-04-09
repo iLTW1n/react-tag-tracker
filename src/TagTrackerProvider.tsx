@@ -23,21 +23,25 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
 
       try {
         const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
-        // if (!parsedData.event) throw new Error('Event property is required');
+        if (!parsedData.event) throw new Error('Event property is required');
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push(parsedData);
         console.log('[TagTracker] Event:', parsedData);
-      } catch {
-        console.warn(`Invalid JSON in ${trackingAttribute} attribute:`, trackData);
+      } catch (error) {
+        console.warn('Click event failed:', error);
       }
     }
   };
 
   const handleHoverTracking = (event: MouseEvent): void => {
     if (enableHoverTracking) {
-      const element = event.target as HTMLElement;
+      let element = event.target as HTMLElement;
 
-      if (element.hasAttribute(trackingAttribute)) {
+      while (element && !element.hasAttribute(trackingAttribute)) {
+        element = element.parentElement as HTMLElement;
+      }
+
+      if (element) {
         const trackData = element.getAttribute(trackingAttribute);
 
         try {

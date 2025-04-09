@@ -77,4 +77,23 @@ describe('TagTracker Click', () => {
     fireEvent.click(elementWithoutTrack!);
     expect(window.dataLayer.length).toBe(2);
   });
+
+  it('should click on an child element and parent element with data-track attribute', () => {
+    const { container } = render(
+      <div data-track='{"event":"test"}'>
+        <div>
+          <p>
+            <button>click</button>
+          </p>
+        </div>
+      </div>
+    );
+    const element = container.querySelector('button');
+    expect(element).toBeInTheDocument();
+    expect(element).not.toHaveAttribute('data-track');
+
+    fireEvent.click(element!);
+    expect(window.dataLayer.length).toBe(1);
+    expect(window.dataLayer).toEqual([{ event: 'test' }]);
+  });
 });

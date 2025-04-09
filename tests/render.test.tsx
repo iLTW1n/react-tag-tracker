@@ -1,8 +1,8 @@
-import { render, screen } from './main.test';
+import { render, screen } from './main';
 
 describe('TagTracker', () => {
   it('should render without crashing', () => {
-    render(<button>click</button>);
+    render(<>click</>);
     expect(screen.getByText('click')).toBeInTheDocument();
   });
 

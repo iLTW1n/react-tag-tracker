@@ -1,4 +1,4 @@
-import { render } from './main.test';
+import { render } from './main';
 
 beforeEach(() => {
   window.dataLayer = [];

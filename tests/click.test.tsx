@@ -1,4 +1,4 @@
-import { render, fireEvent } from './main.test';
+import { render, fireEvent } from './main';
 
 beforeEach(() => {
   window.dataLayer = [];

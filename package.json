@@ -7,7 +7,7 @@
   "types": "./src/index.ts",
   "files": ["dist"],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/",
+    "registry": "https://registry.npmjs.org/",
     "main": "dist/index.js",
     "types": "dist/index.d.ts"
   },

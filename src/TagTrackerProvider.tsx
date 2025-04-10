@@ -23,7 +23,10 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
 
       try {
         const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
+
+        if (['hover', 'visibility'].includes(parsedData.event)) return;
         if (!parsedData.event) throw new Error('Event property is required');
+
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push(parsedData);
         console.log('[TagTracker] Event:', parsedData);
@@ -40,13 +43,14 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
       while (element && !element.hasAttribute(trackingAttribute)) {
         element = element.parentElement as HTMLElement;
       }
-
       if (element) {
         const trackData = element.getAttribute(trackingAttribute);
 
         try {
           const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
-          parsedData.event = 'hover';
+
+          if (parsedData.event !== 'hover') return;
+
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push(parsedData);
           console.log('[TagTracker] Hover Event:', parsedData);
@@ -68,10 +72,13 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
         if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
           try {
             const parsedData = JSON.parse(trackData || '{}');
-            parsedData.event = 'visibility';
+
+            if (parsedData.event !== 'visibility') return;
+
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push(parsedData);
             console.log('[TagTracker] Visibility Event:', parsedData);
+            window.removeEventListener('scroll', handleVisibilityTracking);
           } catch (error) {
             console.warn('Visibility tracking failed:', error);
           }
@@ -86,6 +93,7 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
         console.warn('trackCustomEvent requires an object parameter');
         return;
       }
+
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push(eventData);
       console.log('[TagTracker] Custom Event:', eventData);

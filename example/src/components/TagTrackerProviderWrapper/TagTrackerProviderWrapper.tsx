@@ -1,6 +1,6 @@
 'use client';
 import { ReactNode } from 'react';
-import { TagTrackerProvider } from 'react-tag-tracker';
+import { TagTrackerProvider } from '../../../../src';
 
 type Props = {
   children: ReactNode;
@@ -8,5 +8,9 @@ type Props = {
 
 export const TagTrackerProviderWrapper = (props: Props) => {
   const { children } = props;
-  return <TagTrackerProvider>{children}</TagTrackerProvider>;
+  return (
+    <TagTrackerProvider enableHoverTracking enableVisibilityTracking>
+      {children}
+    </TagTrackerProvider>
+  );
 }

@@ -15,9 +15,7 @@ export default function Home() {
   const [log, setLog] = useState<string>('');
 
   const handleOnSubmit = () => {
-    setTimeout(() => {
-      setLog(JSON.stringify(window.dataLayer, null, 2));
-    }, 100);
+    setTimeout(() => setLog(JSON.stringify(window.dataLayer, null, 2)), 100);
   }
 
   return (

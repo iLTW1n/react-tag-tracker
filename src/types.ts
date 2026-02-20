@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 type DataPrefixedString = `data-${string}`;
 
 export interface DataLayerEventProps {
-  event: string;
+  eventTracker: 'click' | 'hover' | 'visibility' | string;
   [key: string]: string;
 }
 

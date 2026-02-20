@@ -11,6 +11,15 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
     enableCustomTracking = true,
   } = props;
 
+  const pushToDataLayer = (data: DataLayerEventProps) => {
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(data);
+    } catch (error) {
+      console.warn('Failed to push to dataLayer:', error);
+    }
+  }
+
   const handleEvent = (event: MouseEvent): void => {
     let element = event.target as HTMLElement;
 
@@ -24,11 +33,10 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
       try {
         const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
 
-        if (['hover', 'visibility'].includes(parsedData.event)) return;
-        if (!parsedData.event) throw new Error('Event property is required');
+        if (['hover', 'visibility'].includes(parsedData.eventTracker)) return;
+        if (!parsedData.eventTracker) throw new Error('Event property is required');
 
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push(parsedData);
+        pushToDataLayer(parsedData);
         console.log('[TagTracker] Event:', parsedData);
       } catch (error) {
         console.warn('Click event failed:', error);
@@ -49,10 +57,9 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
         try {
           const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
 
-          if (parsedData.event !== 'hover') return;
+          if (parsedData.eventTracker !== 'hover') return;
 
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push(parsedData);
+          pushToDataLayer(parsedData);
           console.log('[TagTracker] Hover Event:', parsedData);
         } catch (error) {
           console.warn('Hover event failed:', error);
@@ -73,10 +80,9 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
           try {
             const parsedData = JSON.parse(trackData || '{}');
 
-            if (parsedData.event !== 'visibility') return;
+            if (parsedData.eventTracker !== 'visibility') return;
 
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push(parsedData);
+            pushToDataLayer(parsedData);
             console.log('[TagTracker] Visibility Event:', parsedData);
             window.removeEventListener('scroll', handleVisibilityTracking);
           } catch (error) {
@@ -94,8 +100,7 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
         return;
       }
 
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(eventData);
+      pushToDataLayer(eventData);
       console.log('[TagTracker] Custom Event:', eventData);
     }
   };
@@ -125,9 +130,7 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
   }, [trackingAttribute, enableHoverTracking, enableVisibilityTracking, enableCustomTracking]);
 
   return (
-    <TagTrackerContext.Provider value={{ trackCustomEvent }}>
-      { children }
-    </TagTrackerContext.Provider>
+    <TagTrackerContext.Provider value={{ trackCustomEvent }}>{children}</TagTrackerContext.Provider>
   );
 };
 

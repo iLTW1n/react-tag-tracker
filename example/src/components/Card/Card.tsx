@@ -7,11 +7,12 @@ type Props = {
   description: string;
   children: ReactNode;
   log: string;
+  tracking: 'click' | 'hover' | 'visibility' | 'custom_event';
 }
 
 export const Card = (props: Props) => {
   const { title, description, log, children } = props;
-
+  const filteredLog = JSON.parse(log || '[]').filter((log: any) => log.eventTracker === props.tracking);
   return (
     <div>
       <div className="border p-4 rounded-xl shadow text-left mb-4">
@@ -27,7 +28,7 @@ export const Card = (props: Props) => {
           language="javascript"
           style={github}
         >
-          {log}
+          {JSON.stringify(filteredLog, null, 2)}
         </SyntaxHighlighter>
       </div>
     </div>

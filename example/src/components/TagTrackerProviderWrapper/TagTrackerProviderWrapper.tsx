@@ -1,6 +1,6 @@
 'use client';
 import { ReactNode } from 'react';
-import { TagTrackerProvider } from '../../../../src';
+import { TagTrackerProvider } from '../../../../dist';
 
 type Props = {
   children: ReactNode;

@@ -1,20 +1,31 @@
-import esbuild from "esbuild";
+import esbuild from 'esbuild';
 
-const sharedConfig = {
-  entryPoints: ["src/index.ts"],
+const shared = {
+  entryPoints: ['src/index.ts'],
   bundle: true,
   sourcemap: true,
-  external: ["react", "react-dom"],
+  minify: true,
+  external: ['react', 'react-dom'],
+  target: ['es2018'],
+  drop: ["console"],
 };
 
 async function build() {
+  // ESM
   await esbuild.build({
-    ...sharedConfig,
-    format: "esm",
-    outfile: "dist/index.js"
+    ...shared,
+    format: 'esm',
+    outfile: 'dist/index.js',
   });
 
-  console.log("✅ Build complete!");
+  // CommonJS
+  await esbuild.build({
+    ...shared,
+    format: 'cjs',
+    outfile: 'dist/index.cjs',
+  });
+
+  console.log('✅ Build complete');
 }
 
 build();

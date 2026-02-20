@@ -51,7 +51,7 @@ export default Root;
 You can now track click events on elements with the `data-track` (or your custom attribute) attribute:
 
 ```jsx
-<button data-track='{"eventTracker"::"click", "category":"button", "label":"Buy Now"}'>
+<button data-track='{"eventTracker":"click", "category":"button", "label":"Buy Now"}'>
   Buy Now
 </button>
 ```
@@ -60,7 +60,7 @@ You can now track click events on elements with the `data-track` (or your custom
 If you’ve enabled `enableHoverTracking`, hover events will be tracked for elements with the tracking attribute:
 
 ```jsx
-<div data-track='{"eventTracker"::"hover", "category":"section", "label":"Special Offer"}'>
+<div data-track='{"eventTracker":"hover", "category":"section", "label":"Special Offer"}'>
   Hover over me!
 </div>
 ```
@@ -69,7 +69,7 @@ If you’ve enabled `enableHoverTracking`, hover events will be tracked for elem
 If you’ve enabled `enableVisibilityTracking`, the library will track when elements with the tracking attribute enter the viewport:
 
 ```jsx
-<div data-track='{"eventTracker"::"visibility", "category":"section", "label":"Featured Product"}'>
+<div data-track='{"eventTracker":"visibility", "category":"section", "label":"Featured Product"}'>
   This element is visible when it enters the viewport!
 </div>
 ```
@@ -111,19 +111,19 @@ const App = () => {
   return (
     <div>
       <button
-        data-track='{"eventTracker"::"click", "category":"button", "label":"Buy Now"}'
+        data-track='{"eventTracker":"click", "category":"button", "label":"Buy Now"}'
       >
         Buy Now
       </button>
 
       <div
-        data-track='{"eventTracker"::"hover", "category":"section", "label":"Special Offer"}'
+        data-track='{"eventTracker":"hover", "category":"section", "label":"Special Offer"}'
       >
         Hover over me to track hover event!
       </div>
 
       <div
-        data-track='{"eventTracker"::"visibility", "category":"section", "label":"Featured Product"}'
+        data-track='{"eventTracker":"visibility", "category":"section", "label":"Featured Product"}'
       >
         I will be tracked when I become visible!
       </div>
@@ -155,7 +155,7 @@ export default Root;
 You can configure the following options when using the `TagTrackerProvider`:
 
 - **`trackingAttribute`**: The attribute used for event tracking. Default is `data-track`.
-  - Example: ```<button data-custom-track='{"eventTracker"::"click", "category":"button"}'>Click Me</button>```
+  - Example: ```<button data-custom-track='{"eventTracker":"click", "category":"button"}'>Click Me</button>```
 
 - **`enableHoverTracking`**: Set this to `true` to enable hover event tracking for elements with the tracking attribute. Default is `false`.
 - **`enableVisibilityTracking`**: Set this to `true` to enable visibility tracking for elements with the tracking attribute. Default is false.

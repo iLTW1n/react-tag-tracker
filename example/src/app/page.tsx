@@ -1,8 +1,7 @@
 'use client';
 import { Card } from '@/components/Card';
 import { useState } from 'react';
-import { DataLayerEventProps } from 'react-tag-tracker';
-import { useTagTracker } from '../../../dist';
+import { useTagTracker, DataLayerEventProps } from 'react-tag-tracker';
 
 declare global {
   interface Window {

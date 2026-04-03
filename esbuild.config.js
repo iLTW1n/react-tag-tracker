@@ -3,7 +3,7 @@ import esbuild from 'esbuild';
 const shared = {
   entryPoints: ['src/index.ts'],
   bundle: true,
-  sourcemap: true,
+  sourcemap: false,
   minify: true,
   external: ['react', 'react-dom'],
   target: ['es2018'],

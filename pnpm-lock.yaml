@@ -84,8 +84,8 @@ importers:
         specifier: ^16.1.0
         version: 16.1.0(react@19.2.4)
       react-tag-tracker:
-        specifier: ^0.1.4
-        version: 0.1.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^0.1.5
+        version: 0.1.5(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.3
@@ -2911,8 +2911,8 @@ packages:
     peerDependencies:
       react: '>= 0.14.0'
 
-  react-tag-tracker@0.1.4:
-    resolution: {integrity: sha512-uCT1gspvfayE9xrNM8kRJd7CB8aJZyU3zlqz7VZILA8StplNzCACGIZqSKEZM8S9urN8O2UCH1ygcHxaDPRC+w==}
+  react-tag-tracker@0.1.5:
+    resolution: {integrity: sha512-zKV+nkJnajyRptSeqj4vIhUMjxjHLrOTYKj8Z3tc40v/h6zR/I4XpLUOF2NrMoxbxcsjbg2UDF75/8JMNOcshQ==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -6714,7 +6714,7 @@ snapshots:
       react: 19.2.4
       refractor: 5.0.0
 
-  react-tag-tracker@0.1.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-tag-tracker@0.1.5(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)

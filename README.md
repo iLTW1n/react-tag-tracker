@@ -47,6 +47,39 @@ export function Root({ children }: { children: React.ReactNode }) {
 </button>
 ```
 
+### Dynamic payloads
+
+When the payload depends on variables, use `JSON.stringify(...)` instead of writing JSON manually inside the attribute.
+
+```tsx
+const trackingData = {
+  eventTracker: 'click',
+  category: 'Learn more',
+  tags: ['pricing', 'hero'],
+};
+
+<button data-track={JSON.stringify(trackingData)}>
+  Learn more
+</button>
+```
+
+```tsx
+const category = title;
+const tags = dynamicTags;
+
+<button
+  data-track={JSON.stringify({
+    eventTracker: 'click',
+    category,
+    tags,
+  })}
+>
+  {title}
+</button>
+```
+
+Avoid hand-written dynamic JSON strings. `data-track` must always be a valid JSON string.
+
 ## Payload contract (important)
 
 `data-track` (or your custom tracking attribute) must contain a valid JSON string.

@@ -1,18 +1,19 @@
 import { ReactNode } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { github } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import { DataLayerEventProps } from 'react-tag-tracker';
 
 type Props = {
   title: string;
   description: string;
   children: ReactNode;
-  log: string;
-  tracking: 'click' | 'hover' | 'visibility' | 'custom_event';
+  events: DataLayerEventProps[];
+  tracking: DataLayerEventProps['eventTracker'];
 }
 
 export const Card = (props: Props) => {
-  const { title, description, log, children } = props;
-  const filteredLog = JSON.parse(log || '[]').filter((log: any) => log.eventTracker === props.tracking);
+  const { title, description, events, children, tracking } = props;
+  const filteredLog = events.filter((event) => event.eventTracker === tracking);
   return (
     <div>
       <div className="border p-4 rounded-xl shadow text-left mb-4">

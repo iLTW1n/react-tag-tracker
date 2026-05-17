@@ -13,7 +13,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-syntax-highlighter": "^16.1.0",
-    "react-tag-tracker": "^0.1.5"
+    "react-tag-tracker": "workspace:*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

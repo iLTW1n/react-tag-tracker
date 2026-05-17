@@ -9,7 +9,13 @@ type Props = {
 export const TagTrackerProviderWrapper = (props: Props) => {
   const { children } = props;
   return (
-    <TagTrackerProvider enableHoverTracking enableVisibilityTracking>
+    <TagTrackerProvider
+      trackingAttribute="data-analytics"
+      enableHoverTracking
+      enableVisibilityTracking
+      visibilityTrackingMode="repeat"
+      enableCustomTracking
+    >
       {children}
     </TagTrackerProvider>
   );

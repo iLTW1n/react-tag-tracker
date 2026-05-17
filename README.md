@@ -1,5 +1,5 @@
 <img
-  src="https://raw.githubusercontent.com/iLTW1n/react-tag-tracker/main/docs/assets/react-tag-tracker.png"
+  src="https://raw.githubusercontent.com/jose-oscategui/react-tag-tracker/main/docs/assets/react-tag-tracker.png"
   alt="react-tag-tracker preview"
   width="100%"
 />

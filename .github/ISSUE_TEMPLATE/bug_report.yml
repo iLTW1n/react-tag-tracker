@@ -1,0 +1,96 @@
+name: Bug report
+description: Report a defect in the library behavior, docs, or example app.
+title: "fix: "
+labels:
+  - bug
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight
+      description: Verify these before submitting.
+      options:
+        - label: I searched existing issues and did not find a duplicate
+          required: true
+        - label: I reproduced this with the latest repository state or latest published package version
+          required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly and directly.
+      placeholder: Clicking a tracked element pushes the wrong payload to window.dataLayer
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal reproduction if possible.
+      placeholder: |
+        1. Render TagTrackerProvider with ...
+        2. Click element with data-track='...'
+        3. Inspect window.dataLayer
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      options:
+        - Core library
+        - Tracking logic
+        - TypeScript types
+        - Tests
+        - Documentation
+        - Example app
+        - Build / packaging
+    validations:
+      required: true
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      placeholder: 0.2.0
+  - type: dropdown
+    id: package-manager
+    attributes:
+      label: Package manager
+      options:
+        - pnpm
+        - npm
+        - yarn
+        - bun
+        - not applicable
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Browser app
+        - Next.js app
+        - Test environment (Jest/jsdom)
+        - Build-time only
+        - Other
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      render: shell
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add links, screenshots, payload examples, or workarounds.

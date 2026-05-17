@@ -1,0 +1,63 @@
+name: Feature request
+description: Propose a new capability or improvement for the library.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight
+      description: Verify these before submitting.
+      options:
+        - label: I searched existing issues and did not find a duplicate
+          required: true
+        - label: This request is for the library or its example/docs, not a one-off app integration problem
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What pain point are you trying to solve?
+      placeholder: I need a way to...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the desired API or behavior from the user's perspective.
+      placeholder: Add a provider prop / hook capability that...
+    validations:
+      required: true
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      options:
+        - Public API
+        - Tracking behavior
+        - TypeScript types
+        - Documentation
+        - Example app
+        - Build / packaging
+        - Developer experience
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Explain when this would be used and why it matters.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds or other approaches you evaluated.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add examples, payload shapes, screenshots, or links.

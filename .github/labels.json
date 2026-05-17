@@ -1,0 +1,42 @@
+[
+  {
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something is broken"
+  },
+  {
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or improvement"
+  },
+  {
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Documentation updates"
+  },
+  {
+    "name": "tests",
+    "color": "5319e7",
+    "description": "Test coverage or test infrastructure"
+  },
+  {
+    "name": "dependencies",
+    "color": "0366d6",
+    "description": "Dependency updates"
+  },
+  {
+    "name": "github-actions",
+    "color": "1d76db",
+    "description": "GitHub Actions and automation"
+  },
+  {
+    "name": "release",
+    "color": "fbca04",
+    "description": "Release and publishing work"
+  },
+  {
+    "name": "tracking",
+    "color": "0e8a16",
+    "description": "Event tracking behavior or payload changes"
+  }
+]

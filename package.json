@@ -22,6 +22,7 @@
     "build:js": "node esbuild.config.js",
     "build": "pnpm build:types && pnpm build:js",
     "test": "jest",
+    "test:ci": "jest --runInBand",
     "lint": "eslint src",
     "size": "size-limit"
   },

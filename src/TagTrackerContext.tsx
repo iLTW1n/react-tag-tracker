@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { DataLayerEventProps } from './types';
+import { DataLayerEventProps } from './types.js';
 
 interface TagTrackerContextType {
   trackCustomEvent: (eventData: DataLayerEventProps) => void;

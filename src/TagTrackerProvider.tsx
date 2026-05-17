@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import TagTrackerContext from './TagTrackerContext';
-import { DataLayerEventProps, TagTrackerProviderProps } from './types';
+import { useCallback, useEffect, useRef } from 'react';
+import TagTrackerContext from './TagTrackerContext.js';
+import { DataLayerEventProps, TagTrackerProviderProps } from './types.js';
 
 const TagTrackerProvider = (props: TagTrackerProviderProps) => {
   const {
@@ -8,8 +8,11 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
     trackingAttribute = 'data-track',
     enableHoverTracking = false,
     enableVisibilityTracking = false,
+    visibilityTrackingMode = 'once',
     enableCustomTracking = true,
   } = props;
+
+  const visibilityTrackedElementsRef = useRef<WeakSet<Element>>(new WeakSet());
 
   const pushToDataLayer = (data: DataLayerEventProps) => {
     try {
@@ -20,55 +23,66 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
     }
   }
 
-  const handleEvent = (event: MouseEvent): void => {
-    let element = event.target as HTMLElement;
+  const parseTrackData = (trackData: string | null, eventName: string): DataLayerEventProps | null => {
+    if (!trackData) return null;
+
+    try {
+      return JSON.parse(trackData) as DataLayerEventProps;
+    } catch (error) {
+      console.warn(`[TagTracker] Invalid JSON in ${trackingAttribute} for ${eventName} event:`, error);
+      return null;
+    }
+  };
+
+  const hasExpectedEventRoute = (data: DataLayerEventProps, expectedRoute: string): boolean => {
+    return typeof data?.eventTracker === 'string' && data.eventTracker === expectedRoute;
+  };
+
+  const findTrackedElement = (target: EventTarget | null): HTMLElement | null => {
+    let element = target as HTMLElement | null;
 
     while (element && !element.hasAttribute(trackingAttribute)) {
-      element = element.parentElement as HTMLElement;
+      element = element.parentElement;
     }
+
+    return element;
+  };
+
+  const handleEvent = useCallback((event: MouseEvent): void => {
+    const element = findTrackedElement(event.target);
 
     if (element) {
       const trackData = element.getAttribute(trackingAttribute);
+      const parsedData = parseTrackData(trackData, 'click');
 
-      try {
-        const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
+      if (!parsedData) return;
 
-        if (['hover', 'visibility'].includes(parsedData.eventTracker)) return;
-        if (!parsedData.eventTracker) throw new Error('Event property is required');
+      if (!hasExpectedEventRoute(parsedData, 'click')) return;
 
-        pushToDataLayer(parsedData);
-        console.log('[TagTracker] Event:', parsedData);
-      } catch (error) {
-        console.warn('Click event failed:', error);
-      }
+      pushToDataLayer(parsedData);
+      console.log('[TagTracker] Event:', parsedData);
     }
-  };
+  }, [trackingAttribute]);
 
-  const handleHoverTracking = (event: MouseEvent): void => {
+  const handleHoverTracking = useCallback((event: MouseEvent): void => {
     if (enableHoverTracking) {
-      let element = event.target as HTMLElement;
+      const element = findTrackedElement(event.target);
 
-      while (element && !element.hasAttribute(trackingAttribute)) {
-        element = element.parentElement as HTMLElement;
-      }
       if (element) {
         const trackData = element.getAttribute(trackingAttribute);
+        const parsedData = parseTrackData(trackData, 'hover');
 
-        try {
-          const parsedData: DataLayerEventProps = JSON.parse(trackData || '{}');
+        if (!parsedData) return;
 
-          if (parsedData.eventTracker !== 'hover') return;
+        if (!hasExpectedEventRoute(parsedData, 'hover')) return;
 
-          pushToDataLayer(parsedData);
-          console.log('[TagTracker] Hover Event:', parsedData);
-        } catch (error) {
-          console.warn('Hover event failed:', error);
-        }
+        pushToDataLayer(parsedData);
+        console.log('[TagTracker] Hover Event:', parsedData);
       }
     }
-  };
+  }, [trackingAttribute, enableHoverTracking]);
 
-  const handleVisibilityTracking = () => {
+  const handleVisibilityTracking = useCallback(() => {
     if (enableVisibilityTracking) {
       const elements = document.querySelectorAll(`[${trackingAttribute}]`);
 
@@ -77,21 +91,27 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
         const rect = element.getBoundingClientRect();
 
         if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-          try {
-            const parsedData = JSON.parse(trackData || '{}');
+          const parsedData = parseTrackData(trackData, 'visibility');
 
-            if (parsedData.eventTracker !== 'visibility') return;
+          if (!parsedData) return;
 
-            pushToDataLayer(parsedData);
-            console.log('[TagTracker] Visibility Event:', parsedData);
-            window.removeEventListener('scroll', handleVisibilityTracking);
-          } catch (error) {
-            console.warn('Visibility tracking failed:', error);
+          if (!hasExpectedEventRoute(parsedData, 'visibility')) return;
+
+          const shouldTrackOnce = visibilityTrackingMode === 'once';
+          if (shouldTrackOnce && visibilityTrackedElementsRef.current.has(element)) {
+            return;
           }
+
+          if (shouldTrackOnce) {
+            visibilityTrackedElementsRef.current.add(element);
+          }
+
+          pushToDataLayer(parsedData);
+          console.log('[TagTracker] Visibility Event:', parsedData);
         }
       });
     }
-  };
+  }, [trackingAttribute, enableVisibilityTracking, visibilityTrackingMode]);
 
   const trackCustomEvent = (eventData: DataLayerEventProps) => {
     if (enableCustomTracking) {
@@ -106,28 +126,32 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
   };
 
   useEffect(() => {
-    document.addEventListener('click', handleEvent);
+    const onClick = (event: MouseEvent) => handleEvent(event);
+    const onMouseOver = (event: MouseEvent) => handleHoverTracking(event);
+    const onScroll = () => handleVisibilityTracking();
+
+    document.addEventListener('click', onClick);
 
     if (enableHoverTracking) {
-      document.addEventListener('mouseover', handleHoverTracking);
+      document.addEventListener('mouseover', onMouseOver);
     }
 
     if (enableVisibilityTracking) {
-      window.addEventListener('scroll', handleVisibilityTracking);
+      window.addEventListener('scroll', onScroll);
     }
 
     return () => {
-      document.removeEventListener('click', handleEvent);
+      document.removeEventListener('click', onClick);
 
       if (enableHoverTracking) {
-        document.removeEventListener('mouseover', handleHoverTracking);
+        document.removeEventListener('mouseover', onMouseOver);
       }
 
       if (enableVisibilityTracking) {
-        window.removeEventListener('scroll', handleVisibilityTracking);
+        window.removeEventListener('scroll', onScroll);
       }
     };
-  }, [trackingAttribute, enableHoverTracking, enableVisibilityTracking, enableCustomTracking]);
+  }, [enableHoverTracking, enableVisibilityTracking, handleEvent, handleHoverTracking, handleVisibilityTracking]);
 
   return (
     <TagTrackerContext.Provider value={{ trackCustomEvent }}>{children}</TagTrackerContext.Provider>

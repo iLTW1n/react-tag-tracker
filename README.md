@@ -1,180 +1,132 @@
-# React Tag Tracker for `Google Tag Manager`
+<img
+  src="https://raw.githubusercontent.com/iLTW1n/react-tag-tracker/main/docs/assets/react-tag-tracker.png"
+  alt="react-tag-tracker preview"
+  width="100%"
+/>
 
-A lightweight and customizable event tracking library for React that simplifies integration with Google Tag Manager (GTM). It provides tracking for click events, hover interactions and scroll visibility, with the flexibility to customize the tracking attributes and enable/disable features dynamically.
+# react-tag-tracker
+
+React provider + hook to push DOM interaction events into `window.dataLayer` (GTM style).
 
 [![npm version](https://img.shields.io/npm/v/react-tag-tracker.svg)](https://www.npmjs.com/package/react-tag-tracker)
 [![Bundle Size](https://img.shields.io/bundlephobia/min/react-tag-tracker)](https://bundlephobia.com/result?p=react-tag-tracker)
 [![npm downloads](https://img.shields.io/npm/dt/react-tag-tracker.svg)](https://www.npmjs.com/package/react-tag-tracker)
-[![License](https://img.shields.io/npm/l/react-tag-tracker)](https://github.com/tu-usuario/tu-repo/blob/main/LICENSE)
 
+## Install
 
-## 🚀 Features
-- **Customizable tracking attribute** (default: `data-track`).
-- **Track click events** on elements with the tracking attribute.
-- **Track hover interactions** (optional).
-- **Track element visibility** when it enters the viewport (optional).
-- **Manual custom event tracking** via the trackCustomEvent method.
-- **Push events directly to Google Tag Manager’s Data Layer**.
+The package is published on npm as [`react-tag-tracker`](https://www.npmjs.com/package/react-tag-tracker).
 
-## 📦 Installation
-You can install the library via npm or yarn:
-
-```sh
+```bash
+# npm
 npm install react-tag-tracker
-# or
+
+# yarn
 yarn add react-tag-tracker
+
+# pnpm
+pnpm add react-tag-tracker
 ```
 
-## 🎯 Usage
-### 1️⃣ Wrap Your App with TagTrackerProvider
-Wrap your application with the `TagTrackerProvider` and configure the features you want to enable (such as custom attributes, hover tracking, visibility tracking, etc.).
+## Quick start
 
-```jsx
-import React from 'react';
+```tsx
 import { TagTrackerProvider } from 'react-tag-tracker';
-import App from './App';
 
-const Root = () => (
-  <TagTrackerProvider
-    trackingAttribute="data-custom-track"  // Customize the tracking attribute if needed
-    enableHoverTracking={true}  // Enable hover tracking (optional)
-    enableVisibilityTracking={true}  // Enable visibility tracking (optional)
-  >
-    <App />
-  </TagTrackerProvider>
-);
-
-export default Root;
+export function Root({ children }: { children: React.ReactNode }) {
+  return (
+    <TagTrackerProvider enableHoverTracking enableVisibilityTracking>
+      {children}
+    </TagTrackerProvider>
+  );
+}
 ```
 
-### 2️⃣ Track Click Events
-You can now track click events on elements with the `data-track` (or your custom attribute) attribute:
-
-```jsx
-<button data-track='{"eventTracker":"click", "category":"button", "label":"Buy Now"}'>
-  Buy Now
+```tsx
+<button data-track='{"eventTracker":"click","category":"cta","tags":["pricing","hero"]}'>
+  Buy now
 </button>
 ```
 
-### 3️⃣ Track Hover Events (Optional)
-If you’ve enabled `enableHoverTracking`, hover events will be tracked for elements with the tracking attribute:
+## Payload contract (important)
 
-```jsx
-<div data-track='{"eventTracker":"hover", "category":"section", "label":"Special Offer"}'>
-  Hover over me!
-</div>
+`data-track` (or your custom tracking attribute) must contain a valid JSON string.
+
+1. The payload must be a **valid JSON object**.
+2. `eventTracker` determines the route and **must** match the event type:
+   - click listener expects `"click"`
+   - hover listener expects `"hover"`
+   - visibility listener expects `"visibility"`
+3. The rest of the payload is user-defined and passed through unchanged.
+   - Your object properties can include arrays, nested objects, booleans, numbers, `null`, etc.
+4. Invalid JSON is ignored safely (no event is pushed for that element/event).
+
+### Route matching example
+
+Each listener only pushes events that match its own route. In plain language:
+
+- Click listener only accepts `eventTracker: "click"`
+- Hover listener only accepts `eventTracker: "hover"`
+- Visibility listener only accepts `eventTracker: "visibility"`
+
+```html
+<!-- Tracked on click -->
+<button data-track='{"eventTracker":"click","page":"checkout"}'>Pay</button>
+
+<!-- Ignored by click listener because route does not match -->
+<button data-track='{"eventTracker":"hover","page":"checkout"}'>Pay</button>
 ```
 
-### 4️⃣ Track Visibility Events (Optional)
-If you’ve enabled `enableVisibilityTracking`, the library will track when elements with the tracking attribute enter the viewport:
+That second button is ignored **for click tracking**. But if hover tracking is enabled, it can still be tracked by the hover listener.
 
-```jsx
-<div data-track='{"eventTracker":"visibility", "category":"section", "label":"Featured Product"}'>
-  This element is visible when it enters the viewport!
-</div>
+## What gets tracked
+
+- **Click** (always enabled): delegated `document` click listener.
+- **Hover** (`enableHoverTracking`): delegated `document` mouseover listener.
+- **Visibility** (`enableVisibilityTracking`): checked on window `scroll`; events are pushed when an element is fully inside viewport. By default, each element is tracked once (`visibilityTrackingMode="once"`).
+- **Custom/manual events** (`enableCustomTracking`, default `true`): `trackCustomEvent(payload)` from `useTagTracker()`.
+
+Notes:
+- The provider initializes `window.dataLayer` if it does not already exist.
+- Visibility tracking runs on `scroll`, not automatically on mount.
+
+## Public API
+
+### `TagTrackerProvider`
+
+```tsx
+<TagTrackerProvider
+  trackingAttribute="data-track"
+  enableHoverTracking={false}
+  enableVisibilityTracking={false}
+  visibilityTrackingMode="once"
+  enableCustomTracking={true}
+>
+  {children}
+</TagTrackerProvider>
 ```
 
-### 5️⃣ Manually Track Custom Events
-You can also manually push custom events to the GTM Data Layer using the `trackCustomEvent` function from the `useTagTracker` hook:
+| Prop | Type | Default | Description |
+|---|---|---:|---|
+| `trackingAttribute` | ``data-${string}`` | `"data-track"` | Attribute read from elements for payload JSON. |
+| `enableHoverTracking` | `boolean` | `false` | Enables hover tracking. |
+| `enableVisibilityTracking` | `boolean` | `false` | Enables visibility tracking on scroll. |
+| `visibilityTrackingMode` | `'once' \| 'repeat'` | `'once'` | Controls whether a visible element is tracked one time (`'once'`) or on every eligible scroll check (`'repeat'`). |
+| `enableCustomTracking` | `boolean` | `true` | Enables `trackCustomEvent`. |
 
-```jsx
+### `useTagTracker`
+
+```tsx
 import { useTagTracker } from 'react-tag-tracker';
 
-const MyComponent = () => {
-  const { trackCustomEvent } = useTagTracker();
-
-  const handleCustomEvent = () => {
-    trackCustomEvent({
-      event: 'custom_event',
-      action: 'User clicked custom button'
-    });
-  };
-
-  return (
-    <button onClick={handleCustomEvent}>
-      Track Custom Event
-    </button>
-  );
-};
+const { trackCustomEvent } = useTagTracker();
+trackCustomEvent({ eventTracker: 'custom', tags: ['react', 'analytics'] });
 ```
 
-### 6️⃣ Full Example
-Here’s a complete example:
+Notes:
+- Must be used inside `TagTrackerProvider`.
+- `trackCustomEvent` expects an object payload.
+- `trackCustomEvent` does not route-check `eventTracker` like DOM listeners do; it pushes the object as provided when custom tracking is enabled.
 
-```jsx
-import React from 'react';
-import { TagTrackerProvider, useTagTracker } from 'react-tag-tracker';
+## License
 
-const App = () => {
-  const { trackCustomEvent } = useTagTracker();
-
-  return (
-    <div>
-      <button
-        data-track='{"eventTracker":"click", "category":"button", "label":"Buy Now"}'
-      >
-        Buy Now
-      </button>
-
-      <div
-        data-track='{"eventTracker":"hover", "category":"section", "label":"Special Offer"}'
-      >
-        Hover over me to track hover event!
-      </div>
-
-      <div
-        data-track='{"eventTracker":"visibility", "category":"section", "label":"Featured Product"}'
-      >
-        I will be tracked when I become visible!
-      </div>
-
-      <button onClick={() => trackCustomEvent({
-        event: 'custom_event',
-        action: 'User clicked custom button'
-      })}>
-        Track Custom Event
-      </button>
-    </div>
-  );
-};
-
-const Root = () => (
-  <TagTrackerProvider
-    trackingAttribute="data-track"
-    enableHoverTracking={true}
-    enableVisibilityTracking={true}
-  >
-    <App />
-  </TagTrackerProvider>
-);
-
-export default Root;
-```
-
-## 🛠️ Configuration Options
-You can configure the following options when using the `TagTrackerProvider`:
-
-- **`trackingAttribute`**: The attribute used for event tracking. Default is `data-track`.
-  - Example: ```<button data-custom-track='{"eventTracker":"click", "category":"button"}'>Click Me</button>```
-
-- **`enableHoverTracking`**: Set this to `true` to enable hover event tracking for elements with the tracking attribute. Default is `false`.
-- **`enableVisibilityTracking`**: Set this to `true` to enable visibility tracking for elements with the tracking attribute. Default is false.
-- **`enableCustomTracking`**: Set this to `true` to enable custom event tracking via the trackCustomEvent function. Default is true.
-
-## 🎯 Roadmap
-- 🔹 **GA4 Integration**: Send events to Google Analytics 4 (GA4).
-- 🔹 **Event Filters**: Add filtering options to track only specific events.
-
-## ✅ Automatic Testing (Jest + Testing Library)
-
-| Tag       | Description |
-|-----------|------------|
-| 🏷️ [Render]  | Check the rendering of the Provider. |
-| 🏷️ [Events] | Test events like `click`, `hover`, `visibility`. |
-| 🏷️ [Custom Attribute] | Check if custom attributes work correctly. |
-| 🏷️ [SSR] | Ensures it works without `window` in SSR. |
-| 🏷️ [Async] | Evaluates events with `setTimeout` or deferred events. |
-
-
-## 📜 License
-MIT License. Open to contributions! 🚀
+MIT

@@ -4,14 +4,16 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 
+const sourceFiles = ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts", "**/*.jsx", "**/*.tsx"];
 
 export default defineConfig([
   {
     ignores: ["dist/**", "node_modules/**"]
   },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], languageOptions: { globals: globals.browser } },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], plugins: { js }, extends: ["js/recommended"] },
+  { files: sourceFiles },
+  { files: sourceFiles, languageOptions: { globals: globals.browser } },
+  { files: sourceFiles, plugins: { js }, extends: ["js/recommended"] },
+  { files: sourceFiles, settings: { react: { version: "detect" } } },
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   pluginReact.configs.flat['jsx-runtime'],

@@ -115,12 +115,12 @@ That second button is ignored **for click tracking**. But if hover tracking is e
 
 - **Click** (always enabled): delegated `document` click listener.
 - **Hover** (`enableHoverTracking`): delegated `document` mouseover listener.
-- **Visibility** (`enableVisibilityTracking`): checked on window `scroll`; events are pushed when an element is fully inside viewport. By default, each element is tracked once (`visibilityTrackingMode="once"`).
+- **Visibility** (`enableVisibilityTracking`): tracked via the browser's `IntersectionObserver`; events are pushed when an element becomes fully visible inside the viewport. By default, each element is tracked once (`visibilityTrackingMode="once"`).
 - **Custom/manual events** (`enableCustomTracking`, default `true`): `trackCustomEvent(payload)` from `useTagTracker()`.
 
 Notes:
 - The provider initializes `window.dataLayer` if it does not already exist.
-- Visibility tracking runs on `scroll`, not automatically on mount.
+- Visibility tracking uses `IntersectionObserver`. If a tracked element is already fully visible when the provider mounts, the initial observer callback counts as a valid visibility event.
 
 ## Public API
 
@@ -142,8 +142,8 @@ Notes:
 |---|---|---:|---|
 | `trackingAttribute` | ``data-${string}`` | `"data-track"` | Attribute read from elements for payload JSON. |
 | `enableHoverTracking` | `boolean` | `false` | Enables hover tracking. |
-| `enableVisibilityTracking` | `boolean` | `false` | Enables visibility tracking on scroll. |
-| `visibilityTrackingMode` | `'once' \| 'repeat'` | `'once'` | Controls whether a visible element is tracked one time (`'once'`) or on every eligible scroll check (`'repeat'`). |
+| `enableVisibilityTracking` | `boolean` | `false` | Enables visibility tracking via `IntersectionObserver`. |
+| `visibilityTrackingMode` | `'once' \| 'repeat'` | `'once'` | Controls whether a visible element is tracked one time (`'once'`) or on every re-entry after the element leaves and becomes fully visible again (`'repeat'`). |
 | `enableCustomTracking` | `boolean` | `true` | Enables `trackCustomEvent`. |
 
 ### `useTagTracker`

@@ -12,7 +12,12 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
     enableCustomTracking = true,
   } = props;
 
-  const visibilityTrackedElementsRef = useRef<WeakSet<Element>>(new WeakSet());
+  // Elements that have already produced a visibility event in `once` mode.
+  const visibilityTrackedOnceRef = useRef<WeakSet<Element>>(new WeakSet());
+  // Elements that are currently fully inside the viewport. Drives the
+  // enter/exit gating for `repeat` mode so the provider only fires on
+  // re-entry, not on every observer callback while the element is still visible.
+  const currentlyVisibleRef = useRef<WeakSet<Element>>(new WeakSet());
 
   const pushToDataLayer = (data: DataLayerEventProps) => {
     try {
@@ -82,37 +87,6 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
     }
   }, [trackingAttribute, enableHoverTracking]);
 
-  const handleVisibilityTracking = useCallback(() => {
-    if (enableVisibilityTracking) {
-      const elements = document.querySelectorAll(`[${trackingAttribute}]`);
-
-      elements.forEach((element) => {
-        const trackData = element.getAttribute(trackingAttribute);
-        const rect = element.getBoundingClientRect();
-
-        if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-          const parsedData = parseTrackData(trackData, 'visibility');
-
-          if (!parsedData) return;
-
-          if (!hasExpectedEventRoute(parsedData, 'visibility')) return;
-
-          const shouldTrackOnce = visibilityTrackingMode === 'once';
-          if (shouldTrackOnce && visibilityTrackedElementsRef.current.has(element)) {
-            return;
-          }
-
-          if (shouldTrackOnce) {
-            visibilityTrackedElementsRef.current.add(element);
-          }
-
-          pushToDataLayer(parsedData);
-          console.log('[TagTracker] Visibility Event:', parsedData);
-        }
-      });
-    }
-  }, [trackingAttribute, enableVisibilityTracking, visibilityTrackingMode]);
-
   const trackCustomEvent = (eventData: DataLayerEventProps) => {
     if (enableCustomTracking) {
       if (typeof eventData !== 'object') {
@@ -128,7 +102,6 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
   useEffect(() => {
     const onClick = (event: MouseEvent) => handleEvent(event);
     const onMouseOver = (event: MouseEvent) => handleHoverTracking(event);
-    const onScroll = () => handleVisibilityTracking();
 
     document.addEventListener('click', onClick);
 
@@ -136,8 +109,80 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
       document.addEventListener('mouseover', onMouseOver);
     }
 
+    let visibilityObserver: IntersectionObserver | null = null;
+    let mutationObserver: MutationObserver | null = null;
+
     if (enableVisibilityTracking) {
-      window.addEventListener('scroll', onScroll);
+      // threshold: 1 approximates the "fully inside the viewport" contract
+      // previously enforced by the scroll-based getBoundingClientRect check.
+      // root: null (the default) means the viewport.
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const target = entry.target;
+            const trackData = target.getAttribute(trackingAttribute);
+            const parsedData = parseTrackData(trackData, 'visibility');
+
+            if (!parsedData) continue;
+            if (!hasExpectedEventRoute(parsedData, 'visibility')) continue;
+
+            const isFullyVisible =
+              entry.isIntersecting && entry.intersectionRatio >= 1;
+
+            if (isFullyVisible) {
+              const wasAlreadyVisible = currentlyVisibleRef.current.has(target);
+              currentlyVisibleRef.current.add(target);
+
+              if (visibilityTrackingMode === 'once') {
+                if (visibilityTrackedOnceRef.current.has(target)) continue;
+                visibilityTrackedOnceRef.current.add(target);
+                observer.unobserve(target);
+                pushToDataLayer(parsedData);
+                console.log('[TagTracker] Visibility Event:', parsedData);
+              } else {
+                // repeat: only fire on the enter transition, not while
+                // the element is continuously fully visible.
+                if (wasAlreadyVisible) continue;
+                pushToDataLayer(parsedData);
+                console.log('[TagTracker] Visibility Event:', parsedData);
+              }
+            } else {
+              // The element left full visibility — clear the enter flag
+              // so the next re-entry can fire in repeat mode.
+              currentlyVisibleRef.current.delete(target);
+            }
+          }
+        },
+        { threshold: 1, root: null }
+      );
+
+      visibilityObserver = observer;
+
+      const elements = document.querySelectorAll(`[${trackingAttribute}]`);
+      elements.forEach((el) => observer.observe(el));
+
+      // Observe tracked elements that are inserted into the DOM after mount.
+      // The initial querySelectorAll above only captures elements present at
+      // provider setup; this MutationObserver keeps the IntersectionObserver
+      // in sync with later additions (e.g. route changes, conditional UI).
+      // Removed nodes need no explicit handling: the WeakSet-backed state
+      // (visibilityTrackedOnceRef, currentlyVisibleRef) lets GC reclaim
+      // entries for detached elements automatically, and the IO simply stops
+      // firing for elements that leave the DOM.
+      const observeTrackedInSubtree = (root: Node) => {
+        if (root.nodeType !== Node.ELEMENT_NODE) return;
+        const el = root as Element;
+        const matched: Element[] = el.matches(`[${trackingAttribute}]`) ? [el] : [];
+        matched.push(...el.querySelectorAll(`[${trackingAttribute}]`));
+        matched.forEach((node) => observer.observe(node));
+      };
+
+      mutationObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          mutation.addedNodes.forEach((node) => observeTrackedInSubtree(node));
+        }
+      });
+      mutationObserver.observe(document.body, { childList: true, subtree: true });
     }
 
     return () => {
@@ -147,11 +192,24 @@ const TagTrackerProvider = (props: TagTrackerProviderProps) => {
         document.removeEventListener('mouseover', onMouseOver);
       }
 
-      if (enableVisibilityTracking) {
-        window.removeEventListener('scroll', onScroll);
+      // Per design: cleanup via disconnect() / unobserve() in useEffect return.
+      // disconnect() covers all observed elements; per-element unobserve() for
+      // once-mode elements happens at the moment of the first visibility event.
+      if (visibilityObserver) {
+        visibilityObserver.disconnect();
+      }
+      if (mutationObserver) {
+        mutationObserver.disconnect();
       }
     };
-  }, [enableHoverTracking, enableVisibilityTracking, handleEvent, handleHoverTracking, handleVisibilityTracking]);
+  }, [
+    enableHoverTracking,
+    enableVisibilityTracking,
+    visibilityTrackingMode,
+    trackingAttribute,
+    handleEvent,
+    handleHoverTracking,
+  ]);
 
   return (
     <TagTrackerContext.Provider value={{ trackCustomEvent }}>{children}</TagTrackerContext.Provider>

@@ -2,6 +2,7 @@
 *.log
 logs
 dist
+coverage
 **/*.backup.*
 **/*.back.*
 
@@ -15,3 +16,9 @@ psd
 thumb
 sketch
 .atl/
+
+# SDD working tree. Tooling artifacts only; never shipped (not in `files`
+# in package.json) and not part of the published source. Listed here so a
+# careless `git add .` cannot drag the whole changes/specs tree into a
+# release commit.
+openspec/
